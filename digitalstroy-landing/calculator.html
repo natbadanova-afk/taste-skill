@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Калькулятор стоимости — DigitalStroy</title>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Simonetta:wght@400;900&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+/* ── DigitalStroy · design tokens (inlined from the design system) ── */
+:root {
+  /* ink / canvas */
+  --ink-950:#08080A; --ink-900:#0C0C0F; --ink-850:#121216; --ink-800:#18181E;
+  --ink-700:#232329; --ink-600:#34343C;
+  /* concrete neutrals */
+  --concrete-050:#F5F5F1; --concrete-100:#E7E7E1; --concrete-300:#B5B5AE;
+  --concrete-400:#8A8A83; --concrete-500:#62625C;
+  /* accent — signal green */
+  --green-300:#9CCC78; --green-400:#60A848; --green-500:#6FBB52; --green-600:#4E8F3A;
+  --green-soft:rgba(96,168,72,0.14);
+  /* secondary accent — signal orange */
+  --signal-400:#FF6A2C; --signal-soft:rgba(255,106,44,0.12);
+  --success:#5BD08A; --warning:#F2C14E; --danger:#F2603F;
+  /* semantic aliases */
+  --bg-page:var(--ink-900); --bg-deep:var(--ink-950);
+  --surface-raised:var(--ink-850); --surface-card:var(--ink-800);
+  --border-subtle:var(--ink-700); --border-strong:var(--ink-600);
+  --text-strong:var(--concrete-050); --text-body:var(--concrete-300);
+  --text-muted:var(--concrete-400); --text-faint:var(--concrete-500);
+  --accent:var(--green-400); --accent-hover:var(--green-500); --accent-press:var(--green-600);
+  --accent-on:#0C0C0F; --accent-wash:var(--green-soft);
+  --accent-2:var(--signal-400); --accent-2-wash:rgba(255,106,44,0.12);
+  --max-1:#2B7FFF; --max-2:#8B3BFF;
+
+  /* fonts — this landing overrides DS defaults with Simonetta + Inter */
+  --font-display:'Simonetta', Georgia, serif;
+  --font-body:'Inter', system-ui, sans-serif;
+  --font-mono:'Inter', system-ui, sans-serif;
+  --fw-regular:400; --fw-medium:500; --fw-semi:600; --fw-bold:700; --fw-black:800;
+
+  /* spacing / radius / shadow / motion */
+  --sp-1:4px; --sp-2:8px; --sp-3:12px; --sp-4:16px; --sp-5:24px; --sp-6:32px;
+  --sp-7:48px; --sp-8:64px; --sp-9:96px; --sp-10:128px;
+  --r-xs:4px; --r-sm:8px; --r-md:14px; --r-lg:24px; --r-xl:30px; --r-pill:999px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,0.4); --shadow-md:0 8px 24px rgba(0,0,0,0.45);
+  --shadow-lg:0 24px 60px rgba(0,0,0,0.55);
+  --glow-accent:0 0 0 1px rgba(96,168,72,0.5), 0 8px 30px rgba(96,168,72,0.22);
+  --ease-out:cubic-bezier(0.22,1,0.36,1); --ease-in-out:cubic-bezier(0.65,0,0.35,1);
+  --dur-fast:140ms; --dur-mid:240ms; --dur-slow:480ms;
+  --container:1240px;
+}
+
+/* ── Button (from DS Button.jsx) ── */
+.btn { display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  font-family:var(--font-body); font-weight:var(--fw-semi); letter-spacing:-0.01em;
+  line-height:1; border-radius:var(--r-pill); cursor:pointer; border:1px solid transparent;
+  transition:filter var(--dur-fast) var(--ease-out), box-shadow var(--dur-fast) var(--ease-out), transform var(--dur-fast) var(--ease-out); }
+.btn-sm { padding:8px 16px; font-size:14px; gap:6px; }
+.btn-md { padding:12px 22px; font-size:15px; gap:8px; }
+.btn-lg { padding:16px 30px; font-size:17px; gap:10px; }
+.btn-full { width:100%; }
+.btn-primary { background:var(--accent); color:var(--accent-on); border-color:var(--accent); }
+.btn-secondary { background:var(--surface-card); color:var(--text-strong); border-color:var(--border-strong); }
+.btn-outline { background:transparent; color:var(--text-strong); border-color:var(--border-strong); }
+.btn-ghost { background:transparent; color:var(--text-body); border-color:transparent; }
+.btn:hover { filter:brightness(1.13) saturate(1.05); box-shadow:0 8px 26px rgba(0,0,0,0.45), 0 0 22px rgba(96,168,72,0.28); }
+
+/* ── Tag (from DS Tag.jsx) ── */
+.tag { display:inline-flex; align-items:center; gap:6px; padding:6px 13px;
+  font-family:var(--font-mono); font-size:12px; letter-spacing:0.04em; text-transform:uppercase;
+  border-radius:var(--r-pill); line-height:1; }
+.tag-default { background:var(--surface-card); color:var(--text-body); border:1px solid var(--border-subtle); }
+.tag-accent { background:var(--accent-wash); color:var(--accent); border:1px solid transparent; }
+.tag-outline { background:transparent; color:var(--text-body); border:1px solid var(--border-strong); }
+.tag-solid { background:var(--accent); color:var(--accent-on); border:1px solid var(--accent); }
+
+
+/* ── page shell ── */
+* { box-sizing:border-box; }
+html, body { margin:0; background:var(--bg-deep); }
+body { font-family:var(--font-body); color:var(--text-body); -webkit-font-smoothing:antialiased; }
+::selection { background:rgba(96,168,72,0.3); }
+.calc-wrap { max-width:1240px; margin:0 auto; padding:64px 32px; }
+.calc-head { text-align:center; margin-bottom:40px; }
+.calc-eyebrow { font-family:var(--font-mono); font-size:12px; font-weight:400; letter-spacing:0.22em; text-transform:uppercase; color:var(--text-muted); }
+.calc-h2 { font-family:var(--font-display); font-size:clamp(30px,4.4vw,50px); font-weight:600; letter-spacing:-0.025em; line-height:1.0; margin:16px 0 14px; color:var(--text-strong); }
+.calc-h2 span { color:var(--accent); }
+.calc-sub { font-family:var(--font-body); font-size:17px; line-height:1.6; color:var(--text-body); max-width:600px; margin:0 auto; }
+
+/* ===== Калькулятор ===== */
+#calc-app { display: grid; grid-template-columns: 1.5fr 1fr; gap: 20px; align-items: start; }
+.cc-directions { display: flex; flex-direction: column; gap: 12px; }
+
+.cc-dir { background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--r-lg); padding: 6px; transition: border-color var(--dur-mid) var(--ease-out), background var(--dur-mid) var(--ease-out); }
+.cc-dir.on { border-color: rgba(96,168,72,0.4); background: linear-gradient(180deg, var(--accent-wash), var(--surface-card) 60%); }
+
+.cc-dir-head { display: flex; align-items: center; gap: 14px; padding: 16px 18px; cursor: pointer; user-select: none; }
+.cc-dir-name { font-family: var(--font-display); font-size: 18px; font-weight: 700; color: var(--text-strong); flex: 1; }
+.cc-dir-from { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); white-space: nowrap; }
+.cc-dir.on .cc-dir-from { display: none; }
+
+/* тумблер */
+.cc-switch { position: relative; width: 42px; height: 24px; border-radius: 999px; background: var(--border-strong); flex: none; transition: background var(--dur-fast) var(--ease-out); }
+.cc-switch input { position: absolute; inset: 0; opacity: 0; margin: 0; cursor: pointer; }
+.cc-knob { position: absolute; top: 3px; left: 3px; width: 18px; height: 18px; border-radius: 999px; background: var(--text-strong); transition: transform var(--dur-fast) var(--ease-out); }
+.cc-switch input:checked ~ .cc-knob { transform: translateX(18px); background: var(--accent-on); }
+.cc-switch:has(input:checked) { background: var(--accent); }
+.cc-switch input:focus-visible ~ .cc-knob { box-shadow: 0 0 0 3px var(--accent-wash); }
+
+/* тело раскрытия */
+.cc-dir-body { display: none; padding: 4px 18px 18px; flex-direction: column; gap: 8px; }
+.cc-dir.on .cc-dir-body { display: flex; }
+.cc-sub { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); margin: 8px 0 2px; }
+
+/* radio-тарифы */
+.cc-tiers { display: flex; flex-direction: column; gap: 8px; }
+.cc-radio, .cc-check { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: var(--r-md); border: 1px solid var(--border-subtle); background: var(--surface-raised); cursor: pointer; transition: border-color var(--dur-fast) var(--ease-out), background var(--dur-fast) var(--ease-out); }
+.cc-radio input, .cc-check input { position: absolute; opacity: 0; width: 0; height: 0; }
+.cc-dot { width: 18px; height: 18px; border-radius: 999px; border: 2px solid var(--border-strong); flex: none; transition: border-width var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out); }
+.cc-radio:has(input:checked) { border-color: var(--accent); background: var(--accent-wash); }
+.cc-radio:has(input:checked) .cc-dot { border-width: 5px; border-color: var(--accent); }
+.cc-radio-label, .cc-check-label { font-family: var(--font-body); font-size: 15px; color: var(--text-body); flex: 1; }
+.cc-radio:has(input:checked) .cc-radio-label { color: var(--text-strong); font-weight: 600; }
+.cc-price { font-family: var(--font-mono); font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+.cc-radio:has(input:checked) .cc-price { color: var(--accent); }
+.cc-per { color: var(--text-faint); }
+
+/* checkbox-опции */
+.cc-addons { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cc-box { width: 18px; height: 18px; border-radius: 5px; border: 2px solid var(--border-strong); flex: none; display: inline-flex; align-items: center; justify-content: center; font-size: 12px; color: var(--accent-on); transition: background var(--dur-fast) var(--ease-out), border-color var(--dur-fast) var(--ease-out); }
+.cc-check:has(input:checked) { border-color: var(--accent); background: var(--accent-wash); }
+.cc-check:has(input:checked) .cc-box { background: var(--accent); border-color: var(--accent); }
+.cc-check:has(input:checked) .cc-box::after { content: "✓"; }
+.cc-check:has(input:checked) .cc-check-label { color: var(--text-strong); }
+.cc-check input:focus-visible ~ .cc-box, .cc-radio input:focus-visible ~ .cc-dot { box-shadow: 0 0 0 3px var(--accent-wash); }
+
+/* степпер */
+.cc-stepper { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px 14px; border-radius: var(--r-md); border: 1px solid var(--border-subtle); background: var(--surface-raised); margin-top: 4px; }
+.cc-step-label { font-family: var(--font-body); font-size: 14px; color: var(--text-body); }
+.cc-step-ctrl { display: inline-flex; align-items: center; gap: 6px; flex: none; }
+.cc-step-btn { width: 30px; height: 30px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--surface-card); color: var(--text-strong); font-size: 18px; line-height: 1; cursor: pointer; }
+.cc-step-val { font-family: var(--font-mono); font-size: 15px; color: var(--text-strong); min-width: 20px; text-align: center; }
+
+.cc-note { font-family: var(--font-body); font-size: 14px; line-height: 1.5; color: var(--text-muted); margin: 4px 0 0; }
+.cc-note b { color: var(--accent); }
+
+/* панель итога */
+.cc-summary { position: sticky; top: 100px; background: linear-gradient(160deg, rgba(96,168,72,0.20), var(--surface-raised) 62%); border: 1px solid rgba(96,168,72,0.4); border-radius: var(--r-lg); padding: 28px; box-shadow: var(--glow-accent); }
+.cc-sum-eyebrow { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted); }
+.cc-sum-main { font-family: var(--font-display); font-size: 44px; font-weight: 700; letter-spacing: -0.03em; color: var(--text-strong); margin: 8px 0 2px; line-height: 1.02; }
+.cc-sum-old { font-family: var(--font-mono); font-size: 15px; color: var(--text-faint); margin-bottom: 2px; }
+.cc-sum-old s { color: var(--text-faint); }
+.cc-sum-cap { font-family: var(--font-mono); font-size: 12px; color: var(--text-muted); margin-bottom: 6px; }
+.cc-sum-monthly { font-family: var(--font-body); font-size: 15px; color: var(--text-body); margin: 6px 0 4px; }
+.cc-sum-monthly b { color: var(--text-strong); font-family: var(--font-display); }
+.cc-sum-lines { display: flex; flex-direction: column; gap: 8px; padding: 16px 0; margin: 14px 0; border-top: 1px solid var(--border-subtle); border-bottom: 1px solid var(--border-subtle); }
+.cc-sum-line { display: flex; justify-content: space-between; gap: 12px; font-family: var(--font-body); font-size: 14px; color: var(--text-body); }
+.cc-sum-line span:last-child { font-family: var(--font-mono); white-space: nowrap; color: var(--text-muted); }
+
+.cc-badge-wrap { background: var(--accent-wash); border: 1px solid rgba(96,168,72,0.35); border-radius: var(--r-md); padding: 14px 16px; margin-bottom: 16px; }
+.cc-badge { display: inline-block; font-family: var(--font-mono); font-size: 12px; font-weight: 700; letter-spacing: 0.04em; color: var(--accent-on); background: var(--accent); padding: 4px 10px; border-radius: 999px; margin-bottom: 8px; }
+.cc-badge-note { font-family: var(--font-body); font-size: 13px; line-height: 1.45; color: var(--text-body); margin: 0; }
+.cc-indiv { font-family: var(--font-body); font-size: 13px; line-height: 1.45; color: var(--text-muted); margin: 0 0 16px; }
+.cc-cta { margin-top: 4px; }
+.cc-cta[disabled] { opacity: 0.4; cursor: not-allowed; }
+.cc-foot { font-family: var(--font-mono); font-size: 11px; line-height: 1.5; color: var(--text-faint); margin: 14px 0 0; text-align: center; }
+
+@media (max-width: 900px) {
+  #calc-app { grid-template-columns: 1fr; }
+  .cc-addons { grid-template-columns: 1fr; }
+  .cc-summary { position: sticky; bottom: 0; top: auto; z-index: 30; }
+}
+
+</style>
+</head>
+<body>
+  <div class="calc-wrap">
+    <div class="calc-head">
+      <span class="calc-eyebrow">Калькулятор</span>
+      <h2 class="calc-h2">Соберите смету за минуту<span>.</span></h2>
+      <p class="calc-sub">Выберите услуги — сумма посчитается сразу. За две и более услуг — скидка от 15%.</p>
+    </div>
+    <div id="calc-app"></div>
+  </div>
+
+  <script>
+/* ============================================================================
+   DigitalStroy — калькулятор стоимости.
+   Весь UI строится из объекта PRICING. Состояние — в памяти (объект state).
+   Пересчёт мгновенный. Скидка 15% на разовую часть при 2+ направлениях.
+   Точка интеграции — window.DSCalcSubmit(payload, summary) (заглушка onSubmit).
+   ========================================================================== */
+(function () {
+  "use strict";
+
+  const PRICING = {
+    currency: "₽",
+    roundTo: 1000,               // округление сумм вниз до 1000 (косметика "от")
+    bundle: {
+      threshold: 2,              // от скольких направлений включается скидка
+      percent: 15,               // минимальный процент ("от 15%")
+      note: "При заказе от двух услуг — скидка от 15%. Точный процент рассчитаем на созвоне."
+    },
+    directions: [
+      {
+        id: "bot", label: "Бот", type: "tiered",
+        tiers: [
+          { id: "simple", label: "Простой бот (меню и заявки)", price: 5000 },
+          { id: "sales",  label: "Бот заявок / продаж",         price: 20000 },
+          { id: "ai",     label: "Бот-воронка / с ИИ",          price: 40000 }
+        ],
+        addons: [
+          { id: "pay",       label: "Приём платежей",            price: 12000 },
+          { id: "crm",       label: "Интеграция с CRM",          price: 15000 },
+          { id: "broadcast", label: "Рассылки и админ-панель",   price: 20000 },
+          { id: "miniapp",   label: "Telegram/Max Mini App",     price: 60000 },
+          { id: "subs",      label: "Подписки и платный доступ", price: 15000 },
+          { id: "parsing",   label: "Парсинг и автозаполнение",  price: 18000 }
+        ],
+        platformMultiplier: { label: "Доп. площадка (Max / ВК / Авито)", perExtra: 0.4, max: 3 }
+      },
+      {
+        id: "site", label: "Сайт / лендинг", type: "tiered",
+        tiers: [
+          { id: "express", label: "Экспресс на Tilda",             price: 8000 },
+          { id: "landing", label: "Лендинг",                       price: 29000 },
+          { id: "premium", label: "Лендинг премиум (SEO+CRM+A/B)", price: 49000 },
+          { id: "corp",    label: "Корпоративный сайт",            price: 89000 }
+        ],
+        addons: []
+      },
+      {
+        id: "crm", label: "CRM", type: "tiered",
+        tiers: [
+          { id: "audit",   label: "Аудит",                      price: 15000 },
+          { id: "amo",     label: "amoCRM — базовая настройка",  price: 30000 },
+          { id: "bitrix",  label: "Битрикс24 — базовый пакет",   price: 45000 },
+          { id: "complex", label: "Комплексное внедрение",       price: 120000 }
+        ],
+        addons: []
+      },
+      {
+        id: "analytics", label: "Аналитика", type: "flat",
+        basePrice: 30000,
+        note: "Дашборд/отчётность — от 30 000 ₽, зависит от источников данных."
+      },
+      {
+        id: "marketer", label: "Аутсорс-маркетолог", type: "tiered",
+        tiers: [
+          { id: "audit",   label: "Аудит + стратегия (разово)", price: 30000 },
+          { id: "quarter", label: "Квартал (ведение)",          price: 50000, per: "мес" },
+          { id: "sub",     label: "Подписка (полное ведение)",  price: 50000, per: "мес" }
+        ],
+        addons: []
+      },
+      {
+        id: "scripts", label: "Скрипты и парсинг", type: "flat",
+        basePrice: 15000,
+        note: "Скрипт/парсер/связка сервисов — от 15 000 ₽."
+      },
+      {
+        id: "traffic", label: "Трафик и реклама", type: "flat",
+        basePrice: 30000, individual: true,
+        note: "От 30 000 ₽ + рекламный бюджет. Точную модель считаем под задачу."
+      }
+    ]
+  };
+
+  // Состояние в памяти. Направление «включено», если для него есть ключ.
+  const state = { selected: {} };
+
+  // --- helpers ---------------------------------------------------------------
+  const dir = (id) => PRICING.directions.find((d) => d.id === id);
+  const fmt = (n) => n.toLocaleString("ru-RU");
+  const floorTo = (n, step) => Math.floor(n / step) * step;
+
+  // Цена активного тарифа направления
+  function tierPrice(d, tierId) {
+    const t = d.tiers.find((x) => x.id === tierId) || d.tiers[0];
+    return t ? t.price : 0;
+  }
+
+  // Разбор одного направления: {oneTime, monthly, lines[]}
+  function priceDirection(id) {
+    const d = dir(id);
+    const sel = state.selected[id];
+    const lines = [];
+    let oneTime = 0, monthly = 0;
+
+    if (d.type === "flat") {
+      // flat-позиция всегда разовая
+      oneTime += d.basePrice;
+      lines.push({ label: d.label, amount: d.basePrice, per: null });
+      return { oneTime, monthly, lines };
+    }
+
+    // tiered — считаем выбранный тариф (может быть помесячным)
+    const tier = d.tiers.find((x) => x.id === sel.tier) || d.tiers[0];
+    const base = tier.price;
+    if (tier.per === "мес") {
+      monthly += base;
+      lines.push({ label: d.label + " · " + tier.label, amount: base, per: "мес" });
+    } else {
+      oneTime += base;
+      lines.push({ label: d.label + " · " + tier.label, amount: base, per: null });
+
+      // доп-опции (только у направлений с addons; всегда разовые)
+      (sel.addons || []).forEach((aid) => {
+        const a = d.addons.find((x) => x.id === aid);
+        if (a) { oneTime += a.price; lines.push({ label: a.label, amount: a.price, per: null }); }
+      });
+
+      // множитель площадок — считается ОТ base
+      if (d.platformMultiplier && sel.extraPlatforms > 0) {
+        const extra = Math.round(base * d.platformMultiplier.perExtra * sel.extraPlatforms);
+        oneTime += extra;
+        lines.push({ label: d.platformMultiplier.label + " ×" + sel.extraPlatforms, amount: extra, per: null });
+      }
+    }
+    return { oneTime, monthly, lines };
+  }
+
+  // Итоговый расчёт по всем включённым направлениям
+  function compute() {
+    let oneTime = 0, monthly = 0, allLines = [], hasIndividual = false;
+    const ids = Object.keys(state.selected);
+    ids.forEach((id) => {
+      const r = priceDirection(id);
+      oneTime += r.oneTime;
+      monthly += r.monthly;
+      allLines = allLines.concat(r.lines);
+      if (dir(id).individual) hasIndividual = true;
+    });
+    const count = ids.length;
+    const discount = count >= PRICING.bundle.threshold ? PRICING.bundle.percent : 0;
+    const oneTimeFinal = floorTo(oneTime * (1 - discount / 100), PRICING.roundTo);
+    return { oneTime, oneTimeFinal, monthly, count, discount, hasIndividual, lines: allLines };
+  }
+
+  // --- рендер направлений (строится из PRICING) ------------------------------
+  function el(tag, cls, html) {
+    const e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (html != null) e.innerHTML = html;
+    return e;
+  }
+
+  function buildDirectionCard(d) {
+    const card = el("div", "cc-dir");
+    card.dataset.dir = d.id;
+
+    // header: тумблер + название
+    const head = el("label", "cc-dir-head");
+    const toggle = el("span", "cc-switch");
+    const input = document.createElement("input");
+    input.type = "checkbox";
+    input.setAttribute("aria-label", "Включить в смету: " + d.label);
+    toggle.appendChild(input);
+    toggle.appendChild(el("span", "cc-knob"));
+    head.appendChild(toggle);
+    head.appendChild(el("span", "cc-dir-name", d.label));
+    // короткий ценник-намёк справа
+    const from = d.type === "flat" ? d.basePrice : Math.min.apply(null, d.tiers.map((t) => t.price));
+    head.appendChild(el("span", "cc-dir-from", "от " + fmt(from) + " " + PRICING.currency));
+    card.appendChild(head);
+
+    // body (тарифы/опции) — раскрывается при включении
+    const bodyWrap = el("div", "cc-dir-body");
+
+    if (d.type === "flat") {
+      if (d.note) bodyWrap.appendChild(el("p", "cc-note", d.note + (d.individual ? " <b>Ориентировочно.</b>" : "")));
+    } else {
+      // тарифы — radio
+      const tiersBox = el("div", "cc-tiers");
+      d.tiers.forEach((t, i) => {
+        const row = el("label", "cc-radio");
+        const r = document.createElement("input");
+        r.type = "radio"; r.name = "tier-" + d.id; r.value = t.id;
+        if (i === 0) r.checked = true;
+        row.appendChild(r);
+        row.appendChild(el("span", "cc-dot"));
+        const per = t.per ? '<span class="cc-per">/' + t.per + "</span>" : "";
+        row.appendChild(el("span", "cc-radio-label", t.label));
+        row.appendChild(el("span", "cc-price", "от " + fmt(t.price) + " " + PRICING.currency + per));
+        tiersBox.appendChild(row);
+      });
+      bodyWrap.appendChild(tiersBox);
+
+      // доп-опции — checkbox
+      if (d.addons && d.addons.length) {
+        bodyWrap.appendChild(el("div", "cc-sub", "Доп. опции"));
+        const addBox = el("div", "cc-addons");
+        d.addons.forEach((a) => {
+          const row = el("label", "cc-check");
+          const c = document.createElement("input");
+          c.type = "checkbox"; c.value = a.id;
+          row.appendChild(c);
+          row.appendChild(el("span", "cc-box"));
+          row.appendChild(el("span", "cc-check-label", a.label));
+          row.appendChild(el("span", "cc-price", "+" + fmt(a.price)));
+          addBox.appendChild(row);
+        });
+        bodyWrap.appendChild(addBox);
+      }
+
+      // множитель площадок — степпер
+      if (d.platformMultiplier) {
+        const pm = d.platformMultiplier;
+        const step = el("div", "cc-stepper");
+        step.innerHTML =
+          '<span class="cc-step-label">' + pm.label + "</span>" +
+          '<span class="cc-step-ctrl">' +
+          '<button type="button" class="cc-step-btn" data-step="-1" aria-label="Меньше">−</button>' +
+          '<span class="cc-step-val">0</span>' +
+          '<button type="button" class="cc-step-btn" data-step="1" aria-label="Больше">+</button>' +
+          "</span>";
+        bodyWrap.appendChild(step);
+      }
+    }
+
+    card.appendChild(bodyWrap);
+    return card;
+  }
+
+  // --- рендер панели итога ---------------------------------------------------
+  function renderSummary(root) {
+    const r = compute();
+    const cur = PRICING.currency;
+    let html = "";
+
+    html += '<div class="cc-sum-eyebrow">Ориентировочно</div>';
+
+    // Разово + зачёркнутая старая цена при скидке
+    html += '<div class="cc-sum-main">от ' + fmt(r.oneTimeFinal) + " " + cur + "</div>";
+    if (r.discount > 0) {
+      html += '<div class="cc-sum-old">от <s>' + fmt(r.oneTime) + " " + cur + "</s></div>";
+    }
+    html += '<div class="cc-sum-cap">Разово' + (r.count ? "" : " · выберите направления") + "</div>";
+
+    // Ежемесячно — только если > 0
+    if (r.monthly > 0) {
+      html += '<div class="cc-sum-monthly">Ежемесячно: <b>от ' + fmt(r.monthly) + " " + cur + "/мес</b></div>";
+    }
+
+    // список позиций
+    if (r.lines.length) {
+      html += '<div class="cc-sum-lines">';
+      r.lines.forEach((l) => {
+        html += '<div class="cc-sum-line"><span>' + l.label + "</span><span>" +
+                fmt(l.amount) + (l.per ? "/" + l.per : "") + "</span></div>";
+      });
+      html += "</div>";
+    }
+
+    // бейдж скидки + note
+    if (r.discount > 0) {
+      html += '<div class="cc-badge-wrap"><span class="cc-badge">−' + r.discount + "% за связку</span>" +
+              '<p class="cc-badge-note">' + PRICING.bundle.note + "</p></div>";
+    }
+
+    // сноска индивидуального расчёта
+    if (r.hasIndividual) {
+      html += '<p class="cc-indiv">Часть услуг (трафик) считается под задачу — итог уточним на созвоне.</p>';
+    }
+
+    // CTA
+    const disabled = r.count === 0 ? " disabled" : "";
+    html += '<button type="button" class="btn btn-primary btn-lg btn-full cc-cta"' + disabled + ">Получить точную смету →</button>";
+
+    // общая подпись
+    html += '<p class="cc-foot">Все цены — минимальные («от»). Финальная смета — после короткого созвона.</p>';
+
+    root.innerHTML = html;
+    root.querySelector(".cc-cta").addEventListener("click", onSubmitClick);
+  }
+
+  // --- CTA: payload + человекочитаемое резюме --------------------------------
+  function buildPayload() {
+    const r = compute();
+    const directions = Object.keys(state.selected).map((id) => {
+      const d = dir(id), sel = state.selected[id];
+      const o = { id: id };
+      if (d.type === "tiered") {
+        o.tier = sel.tier;
+        if (d.addons && d.addons.length) o.addons = (sel.addons || []).slice();
+        if (d.platformMultiplier) o.extraPlatforms = sel.extraPlatforms || 0;
+      }
+      return o;
+    });
+    return {
+      oneTime: r.oneTimeFinal,
+      monthly: r.monthly,
+      discountPercent: r.discount,
+      directions: directions,
+      source: "calculator"
+    };
+  }
+
+  function buildSummaryText() {
+    const r = compute();
+    const cur = PRICING.currency;
+    const rows = r.lines.map((l) => "• " + l.label + " — " + fmt(l.amount) + (l.per ? "/" + l.per : "") + " " + cur);
+    let text = "Смета DigitalStroy\n" + rows.join("\n");
+    text += "\n\nРазово: от " + fmt(r.oneTimeFinal) + " " + cur;
+    if (r.discount > 0) text += " (скидка −" + r.discount + "% за связку, без скидки от " + fmt(r.oneTime) + " " + cur + ")";
+    if (r.monthly > 0) text += "\nЕжемесячно: от " + fmt(r.monthly) + " " + cur + "/мес";
+    return text;
+  }
+
+  function onSubmitClick() {
+    const payload = buildPayload();
+    const summary = buildSummaryText();
+    console.log("[DSCalc] payload:", payload);
+    console.log("[DSCalc] summary:\n" + summary);
+    // Точка интеграции: заменить на отправку в бота/вебхук.
+    if (typeof window.DSCalcSubmit === "function") window.DSCalcSubmit(payload, summary);
+  }
+
+  // --- события ---------------------------------------------------------------
+  function wire(root, summaryRoot) {
+    const rerender = () => renderSummary(summaryRoot);
+
+    root.addEventListener("change", (e) => {
+      const card = e.target.closest(".cc-dir");
+      if (!card) return;
+      const id = card.dataset.dir, d = dir(id);
+
+      // тумблер включения
+      if (e.target.matches(".cc-switch input")) {
+        if (e.target.checked) {
+          const init = {};
+          if (d.type === "tiered") { init.tier = d.tiers[0].id; init.addons = []; init.extraPlatforms = 0; }
+          state.selected[id] = init;
+          card.classList.add("on");
+        } else {
+          delete state.selected[id];
+          card.classList.remove("on");
+        }
+        rerender();
+        return;
+      }
+      if (!state.selected[id]) return;
+
+      // выбор тарифа
+      if (e.target.matches('input[type="radio"]')) {
+        state.selected[id].tier = e.target.value;
+        rerender();
+        return;
+      }
+      // доп-опция
+      if (e.target.matches('.cc-check input')) {
+        const set = new Set(state.selected[id].addons || []);
+        if (e.target.checked) set.add(e.target.value); else set.delete(e.target.value);
+        state.selected[id].addons = Array.from(set);
+        rerender();
+        return;
+      }
+    });
+
+    // степпер площадок
+    root.addEventListener("click", (e) => {
+      const btn = e.target.closest(".cc-step-btn");
+      if (!btn) return;
+      const card = e.target.closest(".cc-dir");
+      const id = card.dataset.dir, d = dir(id);
+      if (!state.selected[id]) return;
+      const max = d.platformMultiplier.max;
+      let v = state.selected[id].extraPlatforms || 0;
+      v += parseInt(btn.dataset.step, 10);
+      v = Math.max(0, Math.min(max, v));          // не выше max и не ниже 0
+      state.selected[id].extraPlatforms = v;
+      card.querySelector(".cc-step-val").textContent = v;
+      rerender();
+    });
+  }
+
+  // --- монтирование ----------------------------------------------------------
+  function mount() {
+    const app = document.getElementById("calc-app");
+    if (!app) return;
+    app.innerHTML =
+      '<div class="cc-directions" id="cc-directions"></div>' +
+      '<aside class="cc-summary" id="cc-summary"></aside>';
+    const dirsRoot = app.querySelector("#cc-directions");
+    const sumRoot = app.querySelector("#cc-summary");
+    PRICING.directions.forEach((d) => dirsRoot.appendChild(buildDirectionCard(d)));
+    wire(dirsRoot, sumRoot);
+    renderSummary(sumRoot);
+  }
+
+  if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", mount);
+  else mount();
+})();
+
+  </script>
+</body>
+</html>
