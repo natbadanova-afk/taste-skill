@@ -1,0 +1,54 @@
+/* ── DigitalStroy · Color tokens ───────────────────────────────
+   Dark, industrial agency palette: near-black canvas, concrete
+   neutrals, and a single "signal green" brand accent (from logo).   */
+:root {
+  /* Base ink / canvas */
+  --ink-950: #08080A;   /* deepest canvas */
+  --ink-900: #0C0C0F;   /* page background */
+  --ink-850: #121216;   /* raised panel */
+  --ink-800: #18181E;   /* card surface */
+  --ink-700: #232329;   /* hairline / border up */
+  --ink-600: #34343C;   /* strong border */
+
+  /* Concrete neutrals (text) */
+  --concrete-050: #F5F5F1;  /* primary text on dark */
+  --concrete-100: #E7E7E1;
+  --concrete-300: #B5B5AE;  /* secondary text */
+  --concrete-400: #8A8A83;  /* muted text */
+  --concrete-500: #62625C;  /* disabled / faint */
+
+  /* Accent — signal green (sampled from logo mark) */
+  --green-300: #9CCC78;  /* light facet */
+  --green-400: #60A848;  /* primary accent */
+  --green-500: #6FBB52;  /* hover (lighter on dark) */
+  --green-600: #4E8F3A;  /* pressed */
+  --green-soft: rgba(96, 168, 72, 0.14);  /* tint wash */
+
+  /* Secondary accent — signal orange (sparingly) */
+  --signal-400: #FF6A2C;
+  --signal-soft: rgba(255, 106, 44, 0.12);
+
+  /* Semantic */
+  --success: #5BD08A;
+  --warning: #F2C14E;
+  --danger:  #F2603F;
+
+  /* ── Semantic aliases ── */
+  --bg-page:        var(--ink-900);
+  --bg-deep:        var(--ink-950);
+  --surface-raised: var(--ink-850);
+  --surface-card:   var(--ink-800);
+  --border-subtle:  var(--ink-700);
+  --border-strong:  var(--ink-600);
+
+  --text-strong:  var(--concrete-050);
+  --text-body:    var(--concrete-300);
+  --text-muted:   var(--concrete-400);
+  --text-faint:   var(--concrete-500);
+
+  --accent:        var(--green-400);
+  --accent-hover:  var(--green-500);
+  --accent-press:  var(--green-600);
+  --accent-on:     #0C0C0F;        /* text on green */
+  --accent-wash:   var(--green-soft);
+}

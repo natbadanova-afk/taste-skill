@@ -1,0 +1,39 @@
+/* ── DigitalStroy · Typography tokens ──────────────────────────
+   Display: Space Grotesk (tight, geometric grotesk)
+   Body:    Manrope
+   Label/Mono: Space Mono (uppercase eyebrows, tags, code)        */
+:root {
+  --font-display: 'Space Grotesk', 'Arial Narrow', sans-serif;
+  --font-body:    'Manrope', system-ui, sans-serif;
+  --font-mono:    'Space Mono', ui-monospace, monospace;
+
+  /* Type scale (fluid-friendly base, px) */
+  --fs-display-xl: 96px;   /* hero */
+  --fs-display-l:  68px;
+  --fs-display-m:  48px;
+  --fs-h1: 38px;
+  --fs-h2: 30px;
+  --fs-h3: 23px;
+  --fs-body-l: 19px;
+  --fs-body:   16px;
+  --fs-sm:     14px;
+  --fs-label:  12px;   /* mono eyebrow */
+
+  /* Line heights */
+  --lh-tight:   0.98;  /* @kind font */
+  --lh-snug:    1.12;  /* @kind font */
+  --lh-normal:  1.5;   /* @kind font */
+  --lh-relaxed: 1.65;  /* @kind font */
+
+  /* Weights */
+  --fw-regular: 400;  /* @kind font */
+  --fw-medium:  500;  /* @kind font */
+  --fw-semi:    600;  /* @kind font */
+  --fw-bold:    700;  /* @kind font */
+  --fw-black:   800;  /* @kind font */
+
+  /* Tracking */
+  --tr-tight:  -0.03em;   /* @kind font */
+  --tr-snug:   -0.01em;   /* @kind font */
+  --tr-label:   0.16em;   /* @kind font */
+}
