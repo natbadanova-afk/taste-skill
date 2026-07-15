@@ -732,21 +732,15 @@
       
 
       
-      <form data-reveal="1" style="background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--r-lg); padding: clamp(24px, 4vw, 40px);">
-        <div data-form-grid="1" style="display: grid; grid-template-columns: 1fr 1fr; gap: 18px;">
-          <label style="display: flex; flex-direction: column; gap: 8px;"><span style="font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted);">Имя и должность</span><input placeholder="Иван Петров, коммерческий директор" class="scp6" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border-strong); border-radius: var(--r-md); padding: 13px 15px; font-size: 15px; font-family: var(--font-body); color: var(--text-strong); outline: none;"></label>
-          <label style="display: flex; flex-direction: column; gap: 8px;"><span style="font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted);">Компания и сайт</span><input placeholder="ООО «Компания», company.ru" class="scp6" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border-strong); border-radius: var(--r-md); padding: 13px 15px; font-size: 15px; font-family: var(--font-body); color: var(--text-strong); outline: none;"></label>
-          <label style="display: flex; flex-direction: column; gap: 8px;"><span style="font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted);">Что продаете бизнесу</span><select class="scp6" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border-strong); border-radius: var(--r-md); padding: 13px 15px; font-size: 15px; font-family: var(--font-body); color: var(--text-strong); outline: none; cursor: pointer;"><option>Опт / дистрибуция</option><option>Коммерческий транспорт / спецтехника</option><option>Оборудование / промышленные решения</option><option>Услуги для бизнеса</option><option>Производство / новые рынки</option><option>Другое</option></select></label>
-          <label style="display: flex; flex-direction: column; gap: 8px;"><span style="font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted);">Маркетинговый бюджет</span><select class="scp6" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border-strong); border-radius: var(--r-md); padding: 13px 15px; font-size: 15px; font-family: var(--font-body); color: var(--text-strong); outline: none; cursor: pointer;"><option>до 300 000 ₽/мес</option><option>300 000 – 700 000 ₽/мес</option><option>700 000 – 1,5 млн ₽/мес</option><option>от 1,5 млн ₽/мес</option></select></label>
-        </div>
-        <label style="display: flex; flex-direction: column; gap: 8px; margin-top: 18px;"><span style="font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted);">Текущая ситуация с лидами</span><textarea rows="4" placeholder="Откуда сейчас идут заявки, какая доля целевых, в чем узкое место..." class="scp6" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border-strong); border-radius: var(--r-md); padding: 13px 15px; font-size: 15px; font-family: var(--font-body); color: var(--text-strong); outline: none; resize: vertical;"></textarea></label>
-        <label style="display: flex; flex-direction: column; gap: 8px; margin-top: 18px;"><span style="font-family: var(--font-mono); font-size: 12px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-muted);">Удобный способ связи</span><input placeholder="Телефон / Telegram / email" class="scp6" style="width: 100%; background: var(--bg-deep); border: 1px solid var(--border-strong); border-radius: var(--r-md); padding: 13px 15px; font-size: 15px; font-family: var(--font-body); color: var(--text-strong); outline: none;"></label>
-        <label style="display: flex; align-items: flex-start; gap: 10px; margin: 20px 0px 22px; cursor: pointer;">
-          <input type="checkbox" style="margin-top: 3px; width: 16px; height: 16px; accent-color: rgb(96, 168, 72); flex: 0 0 auto;">
-          <span style="font-family: var(--font-body); font-size: 12px; line-height: 1.5; color: var(--text-faint);">Я соглашаюсь с обработкой персональных данных в соответствии с 152-ФЗ и политикой конфиденциальности.</span>
-        </label>
-        <button type="submit" class="pill-btn lg full"><span>Заполнить бриф</span><span class="pill-ico"><svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12h15M13 6l6 6-6 6"></path></svg></span></button>
-      </form>
+      <div data-reveal="1" style="background: var(--surface-card); border: 1px solid var(--border-subtle); border-radius: var(--r-lg); padding: clamp(24px, 4vw, 40px);">
+        <!-- Bitrix24 CRM form (inline 228) — реальная отправка заявок в CRM -->
+        <script data-b24-form="inline/228/d2c7a8" data-skip-moving="true">
+        (function(w,d,u){
+        var s=d.createElement('script');s.async=true;s.src=u+'?'+(Date.now()/180000|0);
+        var h=d.getElementsByTagName('script')[0];h.parentNode.insertBefore(s,h);
+        })(window,document,'https://cdn-ru.bitrix24.ru/b253159/crm/form/loader_228.js');
+        </script>
+      </div>
       
     </div>
   </section>
@@ -824,26 +818,8 @@
     });
   });
 
-  // Lead form → thank-you screen (no backend wired; hook up your CRM here)
-  var form = document.querySelector('#brief-form form');
-  if (form) {
-    form.addEventListener('submit', function (e) {
-      e.preventDefault();
-      var thanks = document.createElement('div');
-      thanks.setAttribute('data-reveal', '1');
-      thanks.style.cssText = 'background:var(--surface-card);border:1px solid rgba(96,168,72,0.4);border-radius:var(--r-lg);box-shadow:var(--glow-accent);padding:48px 32px;text-align:center;';
-      thanks.innerHTML =
-        '<div style="width:56px;height:56px;border-radius:999px;background:var(--accent-wash);border:1px solid rgba(96,168,72,0.5);display:flex;align-items:center;justify-content:center;margin:0 auto 20px;">' +
-          '<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#60A848" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M4 12.5L9.5 18L20 6"/></svg>' +
-        '</div>' +
-        '<h3 style="font-family:var(--font-display);font-weight:700;font-size:26px;letter-spacing:-0.02em;color:var(--text-strong);margin:0 0 10px;">Получили ваш бриф.</h3>' +
-        '<p style="font-family:var(--font-body);font-size:16px;line-height:1.55;color:var(--text-body);margin:0 auto 24px;max-width:44ch;">Свяжемся в течение рабочего дня. Если срочно — напишите нам в Telegram.</p>' +
-        '<button type="button" class="ds-tg" style="display:inline-flex;align-items:center;gap:10px;padding:0 22px;height:46px;font-family:var(--font-body);font-weight:600;font-size:15px;border-radius:var(--r-pill);cursor:pointer;background:transparent;color:var(--text-strong);border:1px solid var(--border-strong);">Написать в Telegram <span style="color:var(--accent);">→</span></button>';
-      form.replaceWith(thanks);
-      thanks.querySelector('.ds-tg').addEventListener('click', function () { window.open('https://t.me/digitalstroyru', '_blank', 'noopener'); });
-      requestAnimationFrame(function () { scrollToId('brief-form'); });
-    });
-  }
+  // The brief form is a Bitrix24 CRM embed (section #brief-form) — it handles
+  // its own submission and success screen, so no custom submit handler here.
 
   // tech-grid: highlight follows the cursor on sections that carry a .ds-tech layer
   document.querySelectorAll('.ds-tech').forEach(function (tech) {
